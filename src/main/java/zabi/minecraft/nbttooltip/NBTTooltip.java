@@ -34,7 +34,7 @@ public class NBTTooltip implements ClientModInitializer {
 	public static int ticks = 0;
 	public static int line_scrolled = 0;
 
-	public static final String FORMAT = Formatting.ITALIC.toString()+Formatting.DARK_GRAY;
+	public static final String FORMAT = Formatting.ITALIC.toString() + Formatting.DARK_GRAY;
 
 	public static final int WAITTIME_BEFORE_FAST_SCROLL = 10;
 
@@ -124,8 +124,8 @@ public class NBTTooltip implements ClientModInitializer {
 		if (ModConfig.INSTANCE.showSeparator) {
 			newttip.add(Text.literal("- NBTTooltip -"));
 		}
-		if (ttip.size()>lines) {
-			if (lines+line_scrolled>ttip.size()) {
+		if (ttip.size() > lines) {
+			if (lines + line_scrolled > ttip.size()) {
 				if (isPressed(MinecraftClient.getInstance(), SCROLL_DOWN)) {
 					line_scrolled = ttip.size() - lines;
 				} else {
@@ -133,7 +133,7 @@ public class NBTTooltip implements ClientModInitializer {
 				}
 			}
 			for (int i = 0; i < lines; i++) {
-				newttip.add(ttip.get(i+line_scrolled));
+				newttip.add(ttip.get(i + line_scrolled));
 			}
 		} else {
 			line_scrolled = 0;
@@ -158,7 +158,7 @@ public class NBTTooltip implements ClientModInitializer {
 			NbtCompound tag = encodeStack(stack);
 			if (!tag.isEmpty()) {
 				if (ModConfig.INSTANCE.showDelimiters) {
-					ttip.add(Text.literal(Formatting.DARK_PURPLE+" - nbt start -"));
+					ttip.add(Text.literal(Formatting.DARK_PURPLE + " - nbt start -"));
 				}
 				if (ModConfig.INSTANCE.compress) {
 					ttip.add(Text.literal(FORMAT + tag));
@@ -166,12 +166,12 @@ public class NBTTooltip implements ClientModInitializer {
 					getRenderingEngine().parseTagToList(ttip, tag, ModConfig.INSTANCE.splitLongLines);
 				}
 				if (ModConfig.INSTANCE.showDelimiters) {
-					ttip.add(Text.literal(Formatting.DARK_PURPLE+" - nbt end -"));
+					ttip.add(Text.literal(Formatting.DARK_PURPLE + " - nbt end -"));
 				}
 				ttip = NBTTooltip.transformTtip(ttip, lines);
 				list.addAll(ttip);
 			} else {
-				list.add(Text.literal(FORMAT+"No NBT data"));
+				list.add(Text.literal(FORMAT + "No NBT data"));
 			}
 		}
 	}
