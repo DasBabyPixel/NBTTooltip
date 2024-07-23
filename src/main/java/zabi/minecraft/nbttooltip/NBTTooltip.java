@@ -1,18 +1,13 @@
 package zabi.minecraft.nbttooltip;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.glfw.GLFW;
-
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
@@ -21,13 +16,19 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.lwjgl.glfw.GLFW;
 import zabi.minecraft.nbttooltip.config.ModConfig;
 import zabi.minecraft.nbttooltip.parse_engine.NbtTagParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NBTTooltip implements ClientModInitializer {
 
@@ -155,7 +156,7 @@ public class NBTTooltip implements ClientModInitializer {
 			}
 
 			ArrayList<Text> ttip = new ArrayList<>(lines);
-			NbtCompound tag = encodeStack(stack);
+			NbtCompound tag = encodeStack(stack, context.getRegistryLookup().getOps(NbtOps.INSTANCE));
 			if (!tag.isEmpty()) {
 				if (ModConfig.INSTANCE.showDelimiters) {
 					ttip.add(Text.literal(Formatting.DARK_PURPLE + " - nbt start -"));
@@ -176,8 +177,11 @@ public class NBTTooltip implements ClientModInitializer {
 		}
 	}
 
-	private static NbtCompound encodeStack(ItemStack stack) {
-		DataResult<NbtElement> result = ComponentChanges.CODEC.encodeStart(NbtOps.INSTANCE, stack.getComponentChanges());
+	private static NbtCompound encodeStack(ItemStack stack, DynamicOps<NbtElement> ops) {
+		DataResult<NbtElement> result = ComponentChanges.CODEC.encodeStart(ops, stack.getComponentChanges());
+		result.ifError(e->{
+
+		});
 		NbtElement nbtElement = result.getOrThrow();
 		// cast here, as soon as this breaks, the mod will need to update anyway
 		return (NbtCompound) nbtElement;
@@ -201,7 +205,7 @@ public class NBTTooltip implements ClientModInitializer {
 		StringBuilder sb = new StringBuilder();
 		String name = I18n.translate(stack.getTranslationKey());
 		ArrayList<Text> nbtData = new ArrayList<>();
-		getCopyingEngine().parseTagToList(nbtData, encodeStack(stack), false);
+		getCopyingEngine().parseTagToList(nbtData, encodeStack(stack, mc.player.getRegistryManager().getOps(NbtOps.INSTANCE)), false);
 		nbtData.forEach(t -> {
 			sb.append(t.getString().replaceAll("§[0-9a-gk-or]", ""));
 			sb.append("\n");
