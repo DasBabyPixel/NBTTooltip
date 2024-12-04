@@ -14,6 +14,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.SystemToast.Type;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -203,7 +204,7 @@ public class NBTTooltip implements ClientModInitializer {
 
 	private static void copyToClipboard(ItemStack stack, MinecraftClient mc) {
 		StringBuilder sb = new StringBuilder();
-		String name = I18n.translate(stack.getTranslationKey());
+		String name = I18n.translate(stack.getItem().getTranslationKey());
 		ArrayList<Text> nbtData = new ArrayList<>();
 		getCopyingEngine().parseTagToList(nbtData, encodeStack(stack, mc.player.getRegistryManager().getOps(NbtOps.INSTANCE)), false);
 		nbtData.forEach(t -> {
