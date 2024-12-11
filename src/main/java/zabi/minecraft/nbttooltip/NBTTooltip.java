@@ -204,7 +204,7 @@ public class NBTTooltip implements ClientModInitializer {
 
 	private static void copyToClipboard(ItemStack stack, MinecraftClient mc) {
 		StringBuilder sb = new StringBuilder();
-		String name = I18n.translate(stack.getTranslationKey());
+		String name = I18n.translate(stack.getItem().getTranslationKey());
 		ArrayList<Text> nbtData = new ArrayList<>();
 		getCopyingEngine().parseTagToList(nbtData, encodeStack(stack, mc.player.getRegistryManager().getOps(NbtOps.INSTANCE)), false);
 		nbtData.forEach(t -> {
